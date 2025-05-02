@@ -2,24 +2,59 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Roblox-Server Beitritt</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+    .btn {
+      display: inline-block;
+      padding: 15px 25px;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    p {
+      margin-bottom: 20px;
+      text-align: center;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <p>Klicke auf den Button, um direkt deinem Roblox-Server beizutreten:</p>
+  <button class="btn" id="joinBtn">Server beitreten</button>
+
   <script>
-    // Wenn die Seite lädt, lese die Query-Parameter …
-    window.addEventListener("DOMContentLoaded", () => {
-      const params = new URLSearchParams(window.location.search);
-      const placeId = params.get("placeId");
-      const jobId   = params.get("gameInstanceId");
+    // Query-Parameter aus der URL lesen
+    const params = new URLSearchParams(window.location.search);
+    const placeId = params.get("placeId");
+    const jobId   = params.get("gameInstanceId");
+
+    const joinBtn = document.getElementById("joinBtn");
+    joinBtn.addEventListener("click", () => {
       if (placeId && jobId) {
-        // … und leite sofort weiter
+        // Öffne den Roblox-Client über das Protokoll
         window.location.href = `roblox://experiences/start?placeId=${placeId}&gameInstanceId=${jobId}`;
       } else {
-        document.body.innerText = "Fehler: placeId oder gameInstanceId fehlen in der URL.";
+        alert("Fehler: placeId oder gameInstanceId fehlen in der URL.");
       }
     });
   </script>
-</head>
-<body>
-  <p>Du wirst weitergeleitet…</p>
-  <p>Falls nicht, prüfe die URL-Parameter.</p>
 </body>
 </html>
