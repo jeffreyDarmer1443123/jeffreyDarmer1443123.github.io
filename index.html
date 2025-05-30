@@ -1,60 +1,1417 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roblox-Server Beitritt</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f4f4f4;
-    }
-    .btn {
-      display: inline-block;
-      padding: 15px 25px;
-      font-size: 1rem;
-      color: #fff;
-      background-color: #007bff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    .btn:hover {
-      background-color: #0056b3;
-    }
-    p {
-      margin-bottom: 20px;
-      text-align: center;
-      color: #333;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Rust Raid Calculator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Orbitron', monospace;
+background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+min-height: 100vh;
+color: #e0e0e0;
+overflow-x: hidden;
+}
+
+.bg-pattern {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+opacity: 0.1;
+background-image: 
+    radial-gradient(circle at 20% 80%, #ff6b35 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, #f7931e 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, #ce2029 0%, transparent 50%);
+animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+0%, 100% { transform: translateY(0px) rotate(0deg); }
+50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+.container {
+max-width: 1600px;
+margin: 0 auto;
+padding: 20px;
+}
+
+.header {
+text-align: center;
+margin-bottom: 40px;
+}
+
+.title {
+font-size: 3.5rem;
+font-weight: 900;
+background: linear-gradient(45deg, #ff6b35, #f7931e, #ce2029);
+background-clip: text;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+text-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+margin-bottom: 10px;
+animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+from { filter: brightness(1); }
+to { filter: brightness(1.2); }
+}
+
+.subtitle {
+font-size: 1.2rem;
+color: #b0b0b0;
+font-weight: 400;
+}
+
+.calculator-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+gap: 25px;
+margin-bottom: 30px;
+}
+
+.card {
+background: rgba(40, 40, 40, 0.8);
+border-radius: 15px;
+padding: 20px;
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 107, 53, 0.2);
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+transition: all 0.3s ease;
+}
+
+.card:hover {
+transform: translateY(-2px);
+border-color: rgba(255, 107, 53, 0.4);
+box-shadow: 0 12px 40px rgba(255, 107, 53, 0.2);
+}
+
+.inventory-card {
+border: 1px solid rgba(76, 175, 80, 0.3);
+background: rgba(76, 175, 80, 0.1);
+}
+
+.inventory-card:hover {
+border-color: rgba(76, 175, 80, 0.5);
+box-shadow: 0 12px 40px rgba(76, 175, 80, 0.2);
+}
+
+.card-title {
+font-size: 1.3rem;
+font-weight: 700;
+color: #ff6b35;
+margin-bottom: 15px;
+text-align: center;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+
+.inventory-card .card-title {
+color: #4CAF50;
+}
+
+.structure-grid {
+display: grid;
+grid-template-columns: 1fr;
+gap: 8px;
+max-height: 400px;
+overflow-y: auto;
+scrollbar-width: thin;
+scrollbar-color: #ff6b35 rgba(40, 40, 40, 0.8);
+}
+
+.structure-grid::-webkit-scrollbar {
+width: 6px;
+}
+
+.structure-grid::-webkit-scrollbar-track {
+background: rgba(40, 40, 40, 0.8);
+border-radius: 3px;
+}
+
+.structure-grid::-webkit-scrollbar-thumb {
+background: #ff6b35;
+border-radius: 3px;
+}
+
+.structure-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 8px 10px;
+background: rgba(30, 30, 30, 0.6);
+border-radius: 6px;
+border-left: 3px solid #f7931e;
+transition: all 0.2s ease;
+gap: 10px;
+}
+
+.structure-item:hover {
+background: rgba(40, 40, 40, 0.8);
+border-left-color: #ff6b35;
+}
+
+.structure-item.with-sides {
+padding: 10px;
+}
+
+.inventory-item {
+border-left-color: #4CAF50;
+}
+
+.inventory-item:hover {
+border-left-color: #66BB6A;
+}
+
+.structure-name {
+font-size: 0.85rem;
+font-weight: 600;
+color: #e0e0e0;
+flex: 1;
+}
+
+.structure-inputs {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.structure-input {
+width: 50px;
+padding: 4px 6px;
+background: rgba(20, 20, 20, 0.8);
+border: 1px solid rgba(255, 107, 53, 0.3);
+border-radius: 4px;
+color: #e0e0e0;
+text-align: center;
+font-family: 'Orbitron', monospace;
+font-size: 0.85rem;
+}
+
+.inventory-input {
+border-color: rgba(76, 175, 80, 0.5);
+}
+
+.side-inputs {
+display: flex;
+flex-direction: column;
+gap: 4px;
+margin-top: 8px;
+}
+
+.side-input-row {
+display: flex;
+align-items: center;
+gap: 8px;
+font-size: 0.75rem;
+}
+
+.side-label {
+color: #b0b0b0;
+min-width: 60px;
+}
+
+.side-label.soft {
+color: #4CAF50;
+}
+
+.side-label.hard {
+color: #f44336;
+}
+
+.side-input {
+width: 40px;
+padding: 2px 4px;
+background: rgba(20, 20, 20, 0.8);
+border: 1px solid rgba(255, 107, 53, 0.3);
+border-radius: 3px;
+color: #e0e0e0;
+text-align: center;
+font-family: 'Orbitron', monospace;
+font-size: 0.75rem;
+}
+
+.explosive-toggle {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 8px 10px;
+background: rgba(30, 30, 30, 0.6);
+border-radius: 6px;
+margin-bottom: 8px;
+transition: all 0.2s ease;
+}
+
+.explosive-toggle:hover {
+background: rgba(40, 40, 40, 0.8);
+}
+
+.explosive-checkbox {
+width: 18px;
+height: 18px;
+accent-color: #ff6b35;
+}
+
+.explosive-label {
+font-size: 0.9rem;
+font-weight: 600;
+color: #e0e0e0;
+flex: 1;
+}
+
+.explosive-cost {
+font-size: 0.8rem;
+color: #b0b0b0;
+}
+
+.calculate-btn {
+width: 100%;
+padding: 15px;
+background: linear-gradient(45deg, #ff6b35, #f7931e);
+border: none;
+border-radius: 10px;
+color: white;
+font-family: 'Orbitron', monospace;
+font-size: 1.1rem;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.3s ease;
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-top: 15px;
+grid-column: span 2;
+}
+
+.calculate-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+background: linear-gradient(45deg, #f7931e, #ff6b35);
+}
+
+.results {
+grid-column: span 4;
+background: rgba(206, 32, 41, 0.1);
+border: 2px solid rgba(206, 32, 41, 0.3);
+}
+
+.results-content {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+gap: 20px;
+}
+
+.explosives-needed, .materials-needed, .inventory-status {
+background: rgba(20, 20, 20, 0.4);
+border-radius: 8px;
+padding: 15px;
+}
+
+.inventory-status {
+background: rgba(76, 175, 80, 0.1);
+border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.section-title {
+font-size: 1.1rem;
+font-weight: 700;
+color: #ff6b35;
+margin-bottom: 10px;
+text-align: center;
+}
+
+.inventory-status .section-title {
+color: #4CAF50;
+}
+
+.result-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+gap: 10px;
+}
+
+.result-item {
+text-align: center;
+padding: 10px;
+background: rgba(30, 30, 30, 0.6);
+border-radius: 6px;
+border: 1px solid rgba(206, 32, 41, 0.3);
+}
+
+.inventory-status .result-item {
+border-color: rgba(76, 175, 80, 0.3);
+}
+
+.result-label {
+font-size: 0.8rem;
+color: #b0b0b0;
+margin-bottom: 4px;
+}
+
+.result-value {
+font-size: 1.2rem;
+font-weight: 700;
+color: #ce2029;
+}
+
+.result-value.positive {
+color: #4CAF50;
+}
+
+.result-value.negative {
+color: #f44336;
+}
+
+.inventory-status .result-value {
+color: #4CAF50;
+}
+
+.tooltip {
+position: relative;
+cursor: help;
+}
+
+.tooltip:hover::after {
+content: attr(data-tooltip);
+position: absolute;
+bottom: 125%;
+left: 50%;
+transform: translateX(-50%);
+background: rgba(0, 0, 0, 0.9);
+color: white;
+padding: 8px 12px;
+border-radius: 6px;
+font-size: 0.75rem;
+white-space: nowrap;
+z-index: 1000;
+}
+
+@media (max-width: 1200px) {
+.results {
+    grid-column: span 3;
+}
+
+.results-content {
+    grid-template-columns: 1fr 1fr;
+}
+}
+
+@media (max-width: 768px) {
+.calculator-grid {
+    grid-template-columns: 1fr;
+}
+
+.results {
+    grid-column: span 1;
+}
+
+.results-content {
+    grid-template-columns: 1fr;
+}
+
+.title {
+    font-size: 2.5rem;
+}
+
+.calculate-btn {
+    grid-column: span 1;
+}
+
+.structure-inputs {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+}
+}
+</style>
 </head>
 <body>
-  <p>Klicke auf den Button, um direkt deinem Roblox-Server beizutreten:</p>
-  <button class="btn" id="joinBtn">Server beitreten</button>
+<div class="bg-pattern"></div>
 
-  <script>
-    // Query-Parameter aus der URL lesen
-    const params = new URLSearchParams(window.location.search);
-    const placeId = params.get("placeId");
-    const jobId   = params.get("gameInstanceId");
+<div class="container">
+<div class="header">
+<h1 class="title">ULTIMATE RUST RAID CALCULATOR</h1>
+<p class="subtitle">Komplette Raid-Kosten mit Soft/Hard Side Optimierung & Inventar</p>
+</div>
 
-    const joinBtn = document.getElementById("joinBtn");
-    joinBtn.addEventListener("click", () => {
-      if (placeId && jobId) {
-        // Öffne den Roblox-Client über das Protokoll
-        window.location.href = `roblox://experiences/start?placeId=${placeId}&gameInstanceId=${jobId}`;
-      } else {
-        alert("Fehler: placeId oder gameInstanceId fehlen in der URL.");
-      }
+<div class="calculator-grid">
+<!-- Walls -->
+<div class="card">
+    <h2 class="card-title">🧱 Wände</h2>
+    <div class="structure-grid">
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="1000 HP - Armored Tier">Armored Wall</span>
+                    <input type="number" class="structure-input" id="armoredWall" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="armoredWallSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="armoredWallHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="500 HP - Stone Tier">Stone Wall</span>
+                    <input type="number" class="structure-input" id="stoneWall" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="stoneWallSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="stoneWallHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="250 HP - Metal Tier">Sheet Metal Wall</span>
+                    <input type="number" class="structure-input" id="sheetMetalWall" min="0" value="0">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="sheetMetalWallSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="sheetMetalWallHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="250 HP - Wood Tier">Wood Wall</span>
+                    <input type="number" class="structure-input" id="woodWall" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="woodWallSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="woodWallHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="100 HP - Wood Tier">Twig Wall</span>
+                    <input type="number" class="structure-input" id="twigWall" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="twigWallSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="twigWallHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Doors -->
+<div class="card">
+    <h2 class="card-title">🚪 Türen</h2>
+    <div class="structure-grid">
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="800 HP - Double Width">Armored Double Door</span>
+            <input type="number" class="structure-input" id="armoredDoubleDoor" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="800 HP - Strongest Door">Armored Door</span>
+            <input type="number" class="structure-input" id="armoredDoor" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="600 HP - Large Door">Garage Door</span>
+            <input type="number" class="structure-input" id="garageDoor" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="250 HP - Double Width">Sheet Metal Double Door</span>
+            <input type="number" class="structure-input" id="sheetMetalDoubleDoor" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="250 HP - Standard Door">Sheet Metal Door</span>
+            <input type="number" class="structure-input" id="sheetMetalDoor" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="200 HP - Double Width">Wooden Double Door</span>
+            <input type="number" class="structure-input" id="woodenDoubleDoor" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="200 HP - Basic Door">Wood Door</span>
+            <input type="number" class="structure-input" id="woodDoor" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="63 Explosive Ammo">Ladder Hatch</span>
+            <input type="number" class="structure-input" id="ladderHatch" min="0" value="0">
+        </div>
+    </div>
+</div>
+
+<!-- Foundations & Structures -->
+<div class="card">
+    <h2 class="card-title">🏗️ Fundamente & Strukturen</h2>
+    <div class="structure-grid">
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="1000 HP">Armored Foundation</span>
+                    <input type="number" class="structure-input" id="armoredFoundation" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="armoredFoundationSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="armoredFoundationHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="1000 HP">Armored Roof</span>
+                    <input type="number" class="structure-input" id="armoredRoof" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="armoredRoofSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="armoredRoofHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="500 HP">Stone Foundation</span>
+                    <input type="number" class="structure-input" id="stoneFoundation" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="stoneFoundationSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="stoneFoundationHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="500 HP">Stone Roof</span>
+                    <input type="number" class="structure-input" id="stoneRoof" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="stoneRoofSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="stoneRoofHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="250 HP">Metal Foundation</span>
+                    <input type="number" class="structure-input" id="metalFoundation" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="metalFoundationSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="metalFoundationHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="250 HP">Metal Roof</span>
+                    <input type="number" class="structure-input" id="metalRoof" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="metalRoofSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="metalRoofHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="250 HP">Wooden Foundation</span>
+                    <input type="number" class="structure-input" id="woodenFoundation" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="woodenFoundationSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="woodenFoundationHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="250 HP">Wooden Roof</span>
+                    <input type="number" class="structure-input" id="woodenRoof" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="woodenRoofSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="woodenRoofHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="100 HP">Twig Foundation</span>
+                    <input type="number" class="structure-input" id="twigFoundation" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="twigFoundationSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="twigFoundationHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="structure-item with-sides">
+            <div style="width: 100%;">
+                <div class="structure-inputs">
+                    <span class="structure-name tooltip" data-tooltip="100 HP">Twig Roof</span>
+                    <input type="number" class="structure-input" id="twigRoof" min="0" value="0" placeholder="Total">
+                </div>
+                <div class="side-inputs">
+                    <div class="side-input-row">
+                        <span class="side-label soft">Soft Side:</span>
+                        <input type="number" class="side-input" id="twigRoofSoft" min="0" value="0">
+                    </div>
+                    <div class="side-input-row">
+                        <span class="side-label hard">Hard Side:</span>
+                        <input type="number" class="side-input" id="twigRoofHard" min="0" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Windows & Barriers -->
+<div class="card">
+    <h2 class="card-title">🪟 Fenster & Barrieren</h2>
+    <div class="structure-grid">
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="750 HP">High External Stone Wall</span>
+            <input type="number" class="structure-input" id="externalStoneWall" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="750 HP">High External Stone Gate</span>
+            <input type="number" class="structure-input" id="externalStoneGate" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="400 HP">High External Wood Wall</span>
+            <input type="number" class="structure-input" id="externalWoodWall" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="400 HP">High External Wood Gate</span>
+            <input type="number" class="structure-input" id="externalWoodGate" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="55 Explosive Ammo">Metal Shop Front</span>
+            <input type="number" class="structure-input" id="metalShopFront" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="50 HP">Reinforced Glass Window</span>
+            <input type="number" class="structure-input" id="reinforcedWindow" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="40 HP">Embrasure</span>
+            <input type="number" class="structure-input" id="embrasure" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="25 HP">Window Bars</span>
+            <input type="number" class="structure-input" id="windowBars" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="200 HP">Metal Window Bars</span>
+            <input type="number" class="structure-input" id="metalwindowBars" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="20 HP">Chainlink Fence</span>
+            <input type="number" class="structure-input" id="chainlinkFence" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="15 HP">Chainlink Fence Gate</span>
+            <input type="number" class="structure-input" id="chainlinkFenceGate" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="63 Explosive Ammo">Floor Grill</span>
+            <input type="number" class="structure-input" id="floorGrill" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="63 Explosive Ammo">Floor Triangle Grill</span>
+            <input type="number" class="structure-input" id="floortriangleGrill" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="75 Explosive Ammo">Prison Cell Gate</span>
+            <input type="number" class="structure-input" id="prionCellGate" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="75 Explosive Ammo">Prison Cell Wall</span>
+            <input type="number" class="structure-input" id="prisonCellWall" min="0" value="0">
+        </div>
+    </div>
+</div>
+
+<!-- Defense & Utility -->
+<div class="card">
+    <h2 class="card-title">🛡️ Verteidigung & Utilities</h2>
+    <div class="structure-grid">
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="500 Explosive Ammo">Vending Machine</span>
+            <input type="number" class="structure-input" id="vendingMachine" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="90 Explosive Ammo">Auto Turret</span>
+            <input type="number" class="structure-input" id="autoTurret" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="200 Explosive Ammo">SAM Site</span>
+            <input type="number" class="structure-input" id="samSite" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="34 Explosive Ammo">Flame Turret</span>
+            <input type="number" class="structure-input" id="flameTurret" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="34 Explosive Ammo">Shotgun Trap</span>
+            <input type="number" class="structure-input" id="shotgunTrap" min="0" value="0">
+        </div>
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="10 Explosive Ammo">Tool Cupboard</span>
+            <input type="number" class="structure-input" id="toolCupboard" min="0" value="0">
+        </div>
+    </div>
+</div>
+
+<!-- Barricades -->
+<div class="card">
+    <h2 class="card-title">🚧 Barrieren & Barrikaden</h2>
+    <div class="structure-grid">
+        <div class="structure-item">
+            <span class="structure-name tooltip" data-tooltip="107 Explosive Ammo">Metal Barricade</span>
+            <input type="number" class="structure-input" id="metalBarricade" min="0" value="0">
+        </div>
+    </div>
+</div>
+
+<!-- Explosives Selection -->
+<div class="card">
+    <h2 class="card-title">💥 Verfügbare Explosiva</h2>
+    <div class="explosive-toggle">
+        <input type="checkbox" class="explosive-checkbox" id="useC4" checked>
+        <label class="explosive-label" for="useC4">C4 (Timed Explosive)</label>
+        <span class="explosive-cost">550 DMG</span>
+    </div>
+    <div class="explosive-toggle">
+        <input type="checkbox" class="explosive-checkbox" id="useRockets" checked>
+        <label class="explosive-label" for="useRockets">Rockets</label>
+        <span class="explosive-cost">350 DMG</span>
+    </div>
+    <div class="explosive-toggle">
+        <input type="checkbox" class="explosive-checkbox" id="useSatchels" checked>
+        <label class="explosive-label" for="useSatchels">Satchel Charges</label>
+        <span class="explosive-cost">475 DMG</span>
+    </div>
+    <div class="explosive-toggle">
+        <input type="checkbox" class="explosive-checkbox" id="useExplosiveAmmo" checked>
+        <label class="explosive-label" for="useExplosiveAmmo">Explosive Ammo</label>
+        <span class="explosive-cost">18 DMG</span>
+    </div>
+    <div class="explosive-toggle">
+        <input type="checkbox" class="explosive-checkbox" id="useF1Grenades">
+        <label class="explosive-label" for="useF1Grenades">F1 Grenades</label>
+        <span class="explosive-cost">~6 DMG</span>
+    </div>
+    <div class="explosive-toggle">
+        <input type="checkbox" class="explosive-checkbox" id="useBeancanGrenades">
+        <label class="explosive-label" for="useBeancanGrenades">Beancan Grenades</label>
+        <span class="explosive-cost">~15 DMG</span>
+    </div>
+</div>
+
+<!-- Current Inventory -->
+<div class="card inventory-card">
+    <h2 class="card-title">📦 Dein aktuelles Inventar</h2>
+    <div class="structure-grid">
+        <div class="structure-item inventory-item">
+            <span class="structure-name">C4 (Timed Explosive)</span>
+            <input type="number" class="structure-input inventory-input" id="inventoryC4" min="0" value="0">
+        </div>
+        <div class="structure-item inventory-item">
+            <span class="structure-name">Rockets</span>
+            <input type="number" class="structure-input inventory-input" id="inventoryRockets" min="0" value="0">
+        </div>
+        <div class="structure-item inventory-item">
+            <span class="structure-name">Satchel Charges</span>
+            <input type="number" class="structure-input inventory-input" id="inventorySatchels" min="0" value="0">
+        </div>
+        <div class="structure-item inventory-item">
+            <span class="structure-name">Explosive Ammo</span>
+            <input type="number" class="structure-input inventory-input" id="inventoryExplosiveAmmo" min="0" value="0">
+        </div>
+        <div class="structure-item inventory-item">
+            <span class="structure-name">F1 Grenades</span>
+            <input type="number" class="structure-input inventory-input" id="inventoryF1Grenades" min="0" value="0">
+        </div>
+        <div class="structure-item inventory-item">
+            <span class="structure-name">Beancan Grenades</span>
+            <input type="number" class="structure-input inventory-input" id="inventoryBeancanGrenades" min="0" value="0">
+        </div>
+    </div>
+</div>
+
+<button class="calculate-btn" onclick="calculateOptimalRaid()">Optimale Raid-Kosten Berechnen</button>
+
+<!-- Results -->
+<div class="card results" id="resultsCard" style="display: none;">
+    <h2 class="card-title">📊 Optimale Raid-Kosten Übersicht</h2>
+    <div class="results-content">
+        <div class="explosives-needed">
+            <h3 class="section-title">Benötigte Explosiva</h3>
+            <div class="result-grid" id="explosivesGrid"></div>
+        </div>
+        <div class="materials-needed">
+            <h3 class="section-title">Zusätzliche Crafting Materialien</h3>
+            <div class="result-grid" id="materialsGrid"></div>
+        </div>
+        <div class="inventory-status">
+            <h3 class="section-title">Inventar Status</h3>
+            <div class="result-grid" id="inventoryGrid"></div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<script>
+// EXACT raid costs data with soft side costs included
+const raidCosts = {
+    armoredWall: { satchels: 46, rockets: 15, c4: 8, beancanGrenades: 223, f1Grenades: 1986, explosiveAmmoHard: 799, explosiveAmmoSoft: 798},
+    sheetMetalWall: { satchels: 23, rockets: 8, c4: 4, beancanGrenades: 112, f1Grenades: 993, explosiveAmmoHard: 400, explosiveAmmoSoft: 399},
+    stoneWall: { satchels: 10, rockets: 4, c4: 2, beancanGrenades: 46, f1Grenades: 182, explosiveAmmoHard: 185, explosiveAmmoSoft: 173},
+    woodWall: { satchels: 3, rockets: 2, c4: 1, beancanGrenades: 13, f1Grenades: 59, explosiveAmmoHard: 49, explosiveAmmoSoft: 44},
+    twigWall: { satchels: 1, rockets: 1, c4: 1, beancanGrenades: 1, f1Grenades: 1, explosiveAmmoHard: 2, explosiveAmmoSoft: 1},
+    armoredDoor: { satchels: 15, rockets: 5, c4: 3, beancanGrenades: 69, f1Grenades: 200, explosiveAmmo: 250},
+    garageDoor: { satchels: 9, rockets: 3, c4: 2, beancanGrenades: 42, f1Grenades: 120, explosiveAmmo: 150},
+    sheetMetalDoor: { satchels: 4, rockets: 2, c4: 1, beancanGrenades: 18, f1Grenades: 50, explosiveAmmo: 63},
+    woodDoor: { satchels: 2, rockets: 1, c4: 1, beancanGrenades: 6, f1Grenades: 23, explosiveAmmo: 19},
+    woodenDoubleDoor: { satchels: 2, rockets: 1, c4: 1, beancanGrenades: 6, f1Grenades: 23, explosiveAmmo: 19},
+    sheetMetalDoubleDoor: { satchels: 4, rockets: 2, c4: 1, beancanGrenades: 18, f1Grenades: 50, explosiveAmmo: 63},
+    armoredDoubleDoor: { satchels: 15, rockets: 5, c4: 3, beancanGrenades: 69, f1Grenades: 200, explosiveAmmo: 250},
+    ladderHatch: { satchels: 4, rockets: 2, c4: 1, beancanGrenades: 18, f1Grenades: 50, explosiveAmmo: 63},
+    armoredFoundation: { satchels: 46, rockets: 15, c4: 8, beancanGrenades: 223, f1Grenades: 1986, explosiveAmmoHard: 799, explosiveAmmoSoft: 798},
+    metalFoundation: { satchels: 23, rockets: 8, c4: 4, beancanGrenades: 112, f1Grenades: 993, explosiveAmmoHard: 461, explosiveAmmoSoft: 399},
+    stoneFoundation: { satchels: 10, rockets: 4, c4: 2, beancanGrenades: 46, f1Grenades: 182, explosiveAmmoHard: 185, explosiveAmmoSoft: 173},
+    woodenFoundation: { satchels: 3, rockets: 2, c4: 1, beancanGrenades: 13, f1Grenades: 59, explosiveAmmoHard: 49, explosiveAmmoSoft: 44},
+    twigFoundation: { satchels: 1, rockets: 1, c4: 1, beancanGrenades: 1, f1Grenades: 1, explosiveAmmoHard: 2, explosiveAmmoSoft: 1},
+    armoredRoof: { satchels: 46, rockets: 15, c4: 8, beancanGrenades: 223, f1Grenades: 1986, explosiveAmmoHard: 799, explosiveAmmoSoft: 798},
+    metalRoof: { satchels: 23, rockets: 8, c4: 4, beancanGrenades: 112, f1Grenades: 993, explosiveAmmoHard: 400, explosiveAmmoSoft: 399},
+    stoneRoof: { satchels: 10, rockets: 4, c4: 2, beancanGrenades: 46, f1Grenades: 182, explosiveAmmoHard: 185, explosiveAmmoSoft: 173},
+    woodenRoof: { satchels: 3, rockets: 2, c4: 1, beancanGrenades: 13, f1Grenades: 59, explosiveAmmoHard: 49, explosiveAmmoSoft: 44},
+    twigRoof: { satchels: 1, rockets: 1, c4: 1, beancanGrenades: 1, f1Grenades: 1, explosiveAmmoHard: 2, explosiveAmmoSoft: 1},
+    reinforcedWindow: { satchels: 12, rockets: 4, c4: 2, beancanGrenades: 56, f1Grenades: 497, explosiveAmmo: 200},
+    metalwindowBars: { satchels: 12, rockets: 4, c4: 2, beancanGrenades: 56, f1Grenades: 497, explosiveAmmo: 200},
+    glasswindow: { satchels: 9, rockets: 3, c4: 2, beancanGrenades: 39, f1Grenades: 348, explosiveAmmo: 140},
+    embrasure: { satchels: 13, rockets: 4, c4: 2, beancanGrenades: 59, f1Grenades: 286, explosiveAmmo: 173},
+    metalShopFront: { satchels: 18, rockets: 6, c4: 3, beancanGrenades: 99, f1Grenades: 7229, explosiveAmmo: 300},
+    externalStoneWall: { satchels: 10, rockets: 4, c4: 2, beancanGrenades: 46, f1Grenades: 182, explosiveAmmo: 185},
+    externalWoodWall: { satchels: 6, rockets: 3, c4: 2, beancanGrenades: 26, f1Grenades: 118, explosiveAmmo: 98},
+    externalStoneGate: { satchels: 10, rockets: 4, c4: 2, beancanGrenades: 46, f1Grenades: 182, explosiveAmmo: 185},
+    externalWoodGate: { satchels: 6, rockets: 3, c4: 2, beancanGrenades: 26, f1Grenades: 118, explosiveAmmo: 98},
+    shotgunTrap: { satchels: 1, rockets: 2, c4: 1, beancanGrenades: 7, f1Grenades: 5, explosiveAmmo: 34, HV: 1},
+    autoTurret: { satchels: 2, rockets: 4, c4: 1, beancanGrenades: 16, f1Grenades: 10, explosiveAmmo: 112, HV: 3},
+    flameTurret: { satchels: 1, rockets: 2, c4: 1, beancanGrenades: 7, f1Grenades: 5, explosiveAmmo: 34, HV: 1},
+    samSite: { satchels: 2, rockets: 4, c4: 1, beancanGrenades: 16, f1Grenades: 20, explosiveAmmo: 200},
+    vendingMachine: { satchels: 15, rockets: 10, c4: 3, beancanGrenades: 139, f1Grenades: 1241, explosiveAmmo: 499},
+    toolCupboard: { satchels: 1, rockets: 1, c4: 1, beancanGrenades: 4, f1Grenades: 43, explosiveAmmo: 10},
+    chainlinkFence: { satchels: 2, rockets: 1, c4: 1, beancanGrenades: 6, f1Grenades: 20, explosiveAmmo: 20},
+    chainlinkFenceGate: { satchels: 1, rockets: 1, c4: 1, beancanGrenades: 5, f1Grenades: 15, explosiveAmmo: 15},
+    floorGrill: { satchels: 4, rockets: 2, c4: 1, beancanGrenades: 18, f1Grenades: 50, explosiveAmmo: 63},
+    floortriangleGrill: { satchels: 4, rockets: 2, c4: 1, beancanGrenades: 18, f1Grenades: 50, explosiveAmmo: 63},
+    prionCellGate: { satchels: 5, rockets: 2, c4: 1, beancanGrenades: 21, f1Grenades: 60, explosiveAmmo: 75},
+    prisonCellWall: { satchels: 5, rockets: 2, c4: 1, beancanGrenades: 21, f1Grenades: 60, explosiveAmmo: 75},
+    metalBarricade: { satchels: 4, rockets: 3, c4: 1, beancanGrenades: 38, f1Grenades: 343, explosiveAmmo: 111},
+};
+
+// Explosive data with damage and costs
+const explosives = {
+HV: {
+    name: "	High Velocity Rocket",
+    damage: 480,
+    sulfur: 200,
+    charcoal: 300,
+    pipes: 1,
+},
+c4: {
+    name: "C4",
+    damage: 550,
+    sulfur: 2200,
+    charcoal: 3000,
+    metal: 200,
+    lowGrade: 60,
+    cloth: 5,
+    techTrash: 2
+},
+rockets: {
+    name: "Rockets",
+    damage: 350,
+    sulfur: 1400,
+    charcoal: 1950,
+    metal: 100,
+    lowGrade: 30,
+    pipes: 2,
+},
+satchels: {
+    name: "Satchel Charges",
+    damage: 475,
+    sulfur: 480,
+    charcoal: 720,
+    metal: 80,
+    cloth: 10,
+    rope: 1,
+},
+explosiveAmmo: {
+    name: "Explosive Ammo",
+    damage: 18,
+    perShot: true,
+    sulfur: 50,
+    charcoal: 60,
+    metal: 10,
+},
+f1Grenades: {
+    name: "F1 Grenades",
+    damage: 6,
+    sulfur: 60,
+    charcoal: 90,
+    metal: 25,
+},
+beancanGrenades: {
+    name: "Beancan Grenades",
+    damage: 15,
+    sulfur: 120,
+    charcoal: 180,
+    metal: 20,
+}
+};
+
+// Structures that have soft side options
+const structuresWithSoftSide = [
+    'armoredWall',
+    'sheetMetalWall',
+    'stoneWall',
+    'woodWall',
+    'twigWall',  
+    'armoredFoundation',
+    'metalFoundation',
+    'stoneFoundation',
+    'woodenFoundation',
+    'twigFoundation',
+    'armoredRoof',
+    'metalRoof',
+    'stoneRoof',
+    'woodenRoof',
+    'twigRoof'
+];
+
+// Auto-update hard side when total or soft side changes
+function setupAutoCalculation() {
+    structuresWithSoftSide.forEach(structureId => {
+        const totalInput = document.getElementById(structureId);
+        const softInput = document.getElementById(structureId + 'Soft');
+        const hardInput = document.getElementById(structureId + 'Hard');
+        
+        function updateHardSide() {
+            const total = parseInt(totalInput.value) || 0;
+            const soft = parseInt(softInput.value) || 0;
+            const hard = Math.max(0, total - soft);
+            hardInput.value = hard;
+        }
+        
+        totalInput.addEventListener('input', updateHardSide);
+        softInput.addEventListener('input', updateHardSide);
     });
-  </script>
+}
+
+function calculateOptimalRaid() {
+    // Get available explosives
+    const availableExplosives = [];
+    if (document.getElementById('useC4').checked) availableExplosives.push('c4');
+    if (document.getElementById('useRockets').checked) availableExplosives.push('rockets');
+    if (document.getElementById('useSatchels').checked) availableExplosives.push('satchels');
+    if (document.getElementById('useExplosiveAmmo').checked) availableExplosives.push('explosiveAmmo');
+    if (document.getElementById('useF1Grenades').checked) availableExplosives.push('f1Grenades');
+    if (document.getElementById('useBeancanGrenades').checked) availableExplosives.push('beancanGrenades');
+
+    if (availableExplosives.length === 0) {
+        alert('Bitte wähle mindestens ein verfügbares Explosiv aus!');
+        return;
+    }
+
+    // Get current inventory
+    const currentInventory = {
+        c4: parseInt(document.getElementById('inventoryC4').value) || 0,
+        rockets: parseInt(document.getElementById('inventoryRockets').value) || 0,
+        satchels: parseInt(document.getElementById('inventorySatchels').value) || 0,
+        explosiveAmmo: parseInt(document.getElementById('inventoryExplosiveAmmo').value) || 0,
+        f1Grenades: parseInt(document.getElementById('inventoryF1Grenades').value) || 0,
+        beancanGrenades: parseInt(document.getElementById('inventoryBeancanGrenades').value) || 0
+    };
+
+    const totalNeeded = {};
+    const totalMaterials = {
+        sulfur: 0,
+        gunpowder: 0,
+        charcoal: 0,
+        metal: 0,
+        lowGrade: 0,
+        explosives: 0,
+        cloth: 0,
+        techTrash: 0,
+        pipes: 0,
+        smallStash: 0,
+        rope: 0
+    };
+
+    // Calculate for each structure
+    Object.keys(raidCosts).forEach(structureId => {
+        // For structures with soft side options, use separate inputs
+        if (structuresWithSoftSide.includes(structureId)) {
+            const softCount = parseInt(document.getElementById(structureId + 'Soft')?.value) || 0;
+            const hardCount = parseInt(document.getElementById(structureId + 'Hard')?.value) || 0;
+            
+            // Calculate soft side
+            if (softCount > 0) {
+                calculateStructureCost(structureId, softCount, availableExplosives, totalNeeded, totalMaterials, true);
+            }
+            
+            // Calculate hard side  
+            if (hardCount > 0) {
+                calculateStructureCost(structureId, hardCount, availableExplosives, totalNeeded, totalMaterials, false);
+            }
+        } else {
+            // Regular structures without soft side
+            const count = parseInt(document.getElementById(structureId)?.value) || 0;
+            if (count > 0) {
+                calculateStructureCost(structureId, count, availableExplosives, totalNeeded, totalMaterials, false);
+            }
+        }
+    });
+
+    // Calculate what you need to craft (subtract current inventory)
+    const needToCraft = {};
+    Object.keys(totalNeeded).forEach(explosiveType => {
+        const needed = totalNeeded[explosiveType];
+        const available = currentInventory[explosiveType] || 0;
+        needToCraft[explosiveType] = Math.max(0, needed - available);
+    });
+
+    // Display results
+    displayResults(totalNeeded, needToCraft, totalMaterials, currentInventory);
+}
+
+function calculateStructureCost(structureId, count, availableExplosives, totalNeeded, totalMaterials, isSoftSide) {
+    const structureData = raidCosts[structureId];
+    
+    // Find the most cost-effective method from available explosives
+    let bestMethod = null;
+    let lowestCost = Infinity;
+    
+    availableExplosives.forEach(explosiveType => {
+        let needed = 0;
+        
+        // Determine which cost to use based on soft/hard side and available data
+        if (isSoftSide && structureData[explosiveType + 'Soft']) {
+            needed = structureData[explosiveType + 'Soft'] * count;
+        } else if (explosiveType === 'explosiveAmmo' && isSoftSide && structureData.explosiveAmmoSoft) {
+            needed = structureData.explosiveAmmoSoft * count;
+        } else if (explosiveType === 'explosiveAmmo' && structureData.explosiveAmmoHard) {
+            needed = structureData.explosiveAmmoHard * count;
+        } else if (explosiveType === 'explosiveAmmo' && structureData.explosiveAmmo) {
+            needed = structureData.explosiveAmmo * count;
+        } else if (structureData[explosiveType]) {
+            needed = structureData[explosiveType] * count;
+        } else {
+            return; // Skip if no data available
+        }
+        
+        const explosive = explosives[explosiveType];
+        
+        // Calculate sulfur cost as primary metric for efficiency
+        const sulfurCost = needed * explosive.sulfur;
+        
+        if (sulfurCost < lowestCost) {
+            lowestCost = sulfurCost;
+            bestMethod = { type: explosiveType, amount: needed };
+        }
+    });
+    
+    if (bestMethod) {
+        const explosive = explosives[bestMethod.type];
+        
+        // Add to totals
+        if (!totalNeeded[bestMethod.type]) {
+            totalNeeded[bestMethod.type] = 0;
+        }
+        totalNeeded[bestMethod.type] += bestMethod.amount;
+        
+        // Add material costs
+        totalMaterials.sulfur += bestMethod.amount * explosive.sulfur;
+        totalMaterials.gunpowder += bestMethod.amount * (explosive.gunpowder || 0);
+        totalMaterials.charcoal += bestMethod.amount * (explosive.charcoal || 0);
+        totalMaterials.metal += bestMethod.amount * (explosive.metal || 0);
+        totalMaterials.lowGrade += bestMethod.amount * (explosive.lowGrade || 0);
+        if (explosive.explosives) totalMaterials.explosives += bestMethod.amount * explosive.explosives;
+        if (explosive.cloth) totalMaterials.cloth += bestMethod.amount * explosive.cloth;
+        if (explosive.techTrash) totalMaterials.techTrash += bestMethod.amount * explosive.techTrash;
+        if (explosive.pipes) totalMaterials.pipes += bestMethod.amount * explosive.pipes;
+        if (explosive.smallStash) totalMaterials.smallStash += bestMethod.amount * explosive.smallStash;
+        if (explosive.rope) totalMaterials.rope += bestMethod.amount * explosive.rope;
+    }
+}
+
+function displayResults(explosivesNeeded, needToCraft, materialsNeeded, currentInventory) {
+    const explosivesGrid = document.getElementById('explosivesGrid');
+    const materialsGrid = document.getElementById('materialsGrid');
+    const inventoryGrid = document.getElementById('inventoryGrid');
+
+    // Clear previous results
+    explosivesGrid.innerHTML = '';
+    materialsGrid.innerHTML = '';
+    inventoryGrid.innerHTML = '';
+
+    // Display needed explosives (total needed vs what you need to craft)
+    Object.keys(explosivesNeeded).forEach(explosiveType => {
+        const totalAmount = explosivesNeeded[explosiveType];
+        const craftAmount = needToCraft[explosiveType];
+        const available = currentInventory[explosiveType] || 0;
+        const explosive = explosives[explosiveType];
+        
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = `
+            <div class="result-label">${explosive.name}</div>
+            <div class="result-value">${totalAmount.toLocaleString()}</div>
+        `;
+        explosivesGrid.appendChild(item);
+    });
+
+    // Calculate materials needed only for items to craft
+    const adjustedMaterials = {
+        sulfur: 0,
+        gunpowder: 0,
+        charcoal: 0,
+        metal: 0,
+        lowGrade: 0,
+        explosives: 0,
+        cloth: 0,
+        techTrash: 0,
+        pipes: 0,
+        smallStash: 0,
+        rope: 0
+    };
+
+    Object.keys(needToCraft).forEach(explosiveType => {
+        const amount = needToCraft[explosiveType];
+        if (amount > 0) {
+            const explosive = explosives[explosiveType];
+            adjustedMaterials.sulfur += amount * explosive.sulfur;
+            adjustedMaterials.gunpowder += amount * (explosive.gunpowder || 0);
+            adjustedMaterials.charcoal += amount * (explosive.charcoal || 0);
+            adjustedMaterials.metal += amount * (explosive.metal || 0);
+            adjustedMaterials.lowGrade += amount * (explosive.lowGrade || 0);
+            if (explosive.explosives) adjustedMaterials.explosives += amount * explosive.explosives;
+            if (explosive.cloth) adjustedMaterials.cloth += amount * explosive.cloth;
+            if (explosive.techTrash) adjustedMaterials.techTrash += amount * explosive.techTrash;
+            if (explosive.pipes) adjustedMaterials.pipes += amount * explosive.pipes;
+            if (explosive.smallStash) adjustedMaterials.smallStash += amount * explosive.smallStash;
+            if (explosive.rope) adjustedMaterials.rope += amount * explosive.rope;
+        }
+    });
+
+    // Display material costs
+    const materialLabels = {
+        sulfur: 'Sulfur',
+        gunpowder: 'Gunpowder',
+        charcoal: 'Charcoal',
+        metal: 'Metal Fragments',
+        lowGrade: 'Low Grade Fuel',
+        explosives: 'Explosives',
+        cloth: 'Cloth',
+        techTrash: 'Tech Trash',
+        pipes: 'Pipes',
+        smallStash: 'Small Stash',
+        rope: 'Rope'
+    };
+
+    Object.keys(adjustedMaterials).forEach(material => {
+        const amount = adjustedMaterials[material];
+        if (amount > 0) {
+            const item = document.createElement('div');
+            item.className = 'result-item';
+            item.innerHTML = `
+                <div class="result-label">${materialLabels[material]}</div>
+                <div class="result-value">${amount.toLocaleString()}</div>
+            `;
+            materialsGrid.appendChild(item);
+        }
+    });
+
+    // Display inventory status
+    Object.keys(explosivesNeeded).forEach(explosiveType => {
+        const totalNeeded = explosivesNeeded[explosiveType];
+        const available = currentInventory[explosiveType] || 0;
+        const needToCraftAmount = needToCraft[explosiveType];
+        const explosive = explosives[explosiveType];
+        
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        
+        let statusText = '';
+        let valueClass = '';
+        
+        if (available >= totalNeeded) {
+            statusText = 'Ausreichend vorhanden!';
+            valueClass = 'positive';
+        } else if (available > 0) {
+            statusText = `${needToCraftAmount.toLocaleString()} craften`;
+            valueClass = 'negative';
+        } else {
+            statusText = `${needToCraftAmount.toLocaleString()} craften`;
+            valueClass = 'negative';
+        }
+        
+        item.innerHTML = `
+            <div class="result-label">${explosive.name}</div>
+            <div class="result-value ${valueClass}">${statusText}</div>
+        `;
+        inventoryGrid.appendChild(item);
+    });
+
+    // Show results
+    document.getElementById('resultsCard').style.display = 'block';
+    document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Reset all inputs function
+function resetCalculator() {
+    const inputs = document.querySelectorAll('.structure-input, .side-input, .inventory-input');
+    inputs.forEach(input => {
+        if (!input.readOnly) {
+            input.value = '0';
+        }
+    });
+    document.getElementById('resultsCard').style.display = 'none';
+}
+
+// Add enter key support for inputs
+document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        calculateOptimalRaid();
+    }
+});
+
+// Initialize the calculator
+document.addEventListener('DOMContentLoaded', function() {
+    // Setup auto-calculation for soft/hard side inputs
+    setupAutoCalculation();
+    
+    // Add reset button functionality
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'calculate-btn';
+    resetBtn.textContent = 'ALLE WERTE ZURÜCKSETZEN';
+    resetBtn.style.background = 'linear-gradient(45deg, #ce2029, #8b1a1a)';
+    resetBtn.style.marginTop = '10px';
+    resetBtn.onclick = resetCalculator;
+
+    const calculatorGrid = document.querySelector('.calculator-grid');
+    calculatorGrid.appendChild(resetBtn);
+});
+</script>
 </body>
 </html>
